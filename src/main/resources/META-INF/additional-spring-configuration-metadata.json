@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "rawImage.targetPath",
+      "type": "java.lang.String",
+      "description": "Description for rawImage.targetPath."
+  }
+] }
