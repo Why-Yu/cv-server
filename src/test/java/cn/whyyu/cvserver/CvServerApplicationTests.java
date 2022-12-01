@@ -13,8 +13,9 @@ class CvServerApplicationTests {
 
     @Test
     void getMetaData() {
-        String url = "D:/ftpResource/image";
-        ftpUtil.createDirectory(url);
+//        String url = "000001";
+//        Long a = Long.parseLong(url);
+//        System.out.println(a);
     }
 
 }

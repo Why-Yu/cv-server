@@ -42,6 +42,8 @@ public class VideoThreadPool implements ApplicationContextAware {
     public void startVideoPush() {
         VideoPush videoPush = applicationContext.getBean(VideoPush.class);
         videoPush.setVideoInfo(videoInfo);
+        // 注册recorder，以便复用该对象
+        videoPush.registerRecorder("rtmp://127.0.0.1:1935/live/camera1");
         threadPool.execute(videoPush);
     }
 

@@ -29,8 +29,8 @@ public class RedisUtil {
         return redisTemplate.opsForStream().add(record);
     }
 
-    public RecordId addNewImage(Map<String, String> parameter) {
-        StringRecord record = StreamRecords.string(parameter).withStreamKey("newImage");
+    public RecordId addStart(Map<String, String> parameter) {
+        StringRecord record = StreamRecords.string(parameter).withStreamKey("start");
         return redisTemplate.opsForStream().add(record);
     }
 

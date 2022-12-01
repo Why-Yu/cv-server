@@ -32,8 +32,6 @@ public class VideoPull implements Runnable{
     @Autowired
     private VideoConfig videoConfig;
     @Autowired
-    private FTPUtil ftpUtil;
-    @Autowired
     RedisUtil redisUtil;
     private VideoInfo videoInfo;
     private FFmpegFrameGrabber grabber;
@@ -80,7 +78,7 @@ public class VideoPull implements Runnable{
 
                 String linuxPath = videoConfig.getLinuxPath();
                 redisUtil.addRawImage(Collections.singletonMap("ftpURL", linuxPath + imageFile.getName()));
-                redisUtil.addNewImage(Collections.singletonMap("ftpURL", linuxPath + imageFile.getName()));
+//                redisUtil.addNewImage(Collections.singletonMap("ftpURL", linuxPath + imageFile.getName()));
                 i += interval;
             }
         } catch (FrameGrabber.Exception e) {

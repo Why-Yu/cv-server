@@ -2,6 +2,7 @@ package cn.whyyu.cvserver.controller;
 
 import cn.whyyu.cvserver.ftp.FTPUtil;
 import cn.whyyu.cvserver.redis.RedisUtil;
+import cn.whyyu.cvserver.video.mission.TestImageToStream;
 import cn.whyyu.cvserver.video.mission.TestImageToVideo;
 import cn.whyyu.cvserver.video.threadpool.VideoThreadPool;
 import org.apache.commons.net.ftp.FTPClient;
@@ -30,13 +31,20 @@ public class TestController {
 //        videoThreadPool.startVideoPull();
 //        videoThreadPool.startVideoPush();
 //        ftpUtil.download("image/rawImage/0.jpg", "F:/Image/newImage/2000000.jpg");
-        TestImageToVideo test = new TestImageToVideo();
+        TestImageToStream test = new TestImageToStream();
         test.test();
     }
 
-    @RequestMapping("/videoUpload")
-    public void videoUpload() {
+    @RequestMapping("/videoTest")
+    public void videoTest() {
         videoThreadPool.startVideoPull();
+        Map<String, String> parameter = new HashMap<>();
+        parameter.put("xMin", "1208");
+        parameter.put("yMin", "576");
+        parameter.put("xMax", "1233");
+        parameter.put("yMax", "625");
+        parameter.put("ftpDirectory", "image/rawImage");
+        redisUtil.addStart(parameter);
         redisUtil.createGroup("newImage", "newImageGroup");
         redisUtil.registerDownloadListener();
         videoThreadPool.startVideoPush();

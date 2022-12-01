@@ -21,7 +21,7 @@ public class ImageStreamListener implements StreamListener<String, MapRecord<Str
     @Override
     public void onMessage(MapRecord<String, String, String> message) {
        Map<String, String> parameter = message.getValue();
-        System.out.println(parameter);
+//        System.out.println(parameter);
        String ftpURL = parameter.get("ftpURL");
        String fileName = ftpURL.substring(ftpURL.lastIndexOf("/") + 1);
 //       try {
