@@ -24,9 +24,10 @@ public class PointIndex {
      * @param target 当前用户的地理位置
      * @return 距离用户最近的几个点
      */
-    public List<S2ClosestPointQuery.Result<Boolean>> findClosestPoints(S2Point target) {
+    public List<S2ClosestPointQuery.Result<Boolean>> findClosestPoints(
+            S2Point target, int maxPoints) {
         S2ClosestPointQuery<Boolean> query = new S2ClosestPointQuery<>(s2PointIndex);
-        query.setMaxPoints(3);
+        query.setMaxPoints(maxPoints);
         return query.findClosestPoints(target);
     }
 
