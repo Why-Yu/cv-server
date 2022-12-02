@@ -36,8 +36,8 @@ public class VideoPull implements Runnable{
     private VideoInfo videoInfo;
     private FFmpegFrameGrabber grabber;
 
-    public VideoInfo getInformation() {
-        grabber = new FFmpegFrameGrabber(videoConfig.getUrl());
+    public VideoInfo registerGrabber(String videoUrl) {
+        grabber = new FFmpegFrameGrabber(videoUrl);
         try {
             grabber.start();
         } catch (FFmpegFrameGrabber.Exception e) {

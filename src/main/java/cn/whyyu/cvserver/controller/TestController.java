@@ -2,6 +2,7 @@ package cn.whyyu.cvserver.controller;
 
 import cn.whyyu.cvserver.ftp.FTPUtil;
 import cn.whyyu.cvserver.redis.RedisUtil;
+import cn.whyyu.cvserver.util.CommonResult;
 import cn.whyyu.cvserver.video.mission.TestImageToStream;
 import cn.whyyu.cvserver.video.mission.TestImageToVideo;
 import cn.whyyu.cvserver.video.threadpool.VideoThreadPool;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,8 +39,8 @@ public class TestController {
     }
 
     @RequestMapping("/videoTest")
-    public void videoTest() {
-        videoThreadPool.startVideoPull();
+    public CommonResult<List<String>> videoTest() {
+        videoThreadPool.startVideoPull("F:/Image/test.mp4");
         Map<String, String> parameter = new HashMap<>();
         parameter.put("xMin", "1208");
         parameter.put("yMin", "576");
@@ -47,6 +50,9 @@ public class TestController {
         redisUtil.addStart(parameter);
         redisUtil.createGroup("newImage", "newImageGroup");
         redisUtil.registerDownloadListener();
-        videoThreadPool.startVideoPush();
+        List<String> resultList = new ArrayList<>();
+        String pushURL = videoThreadPool.startVideoPush("F:/Image/test.mp4");
+        resultList.add(pushURL);
+        return CommonResult.success(resultList);
     }
 }
