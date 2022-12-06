@@ -16,6 +16,7 @@ public class VideoConfig {
     private String linuxPath;
     private String url;
     private String pushUrlPrefix;
+    private String nginxUrl;
     private Long interval;
     private String downloadPath;
 }

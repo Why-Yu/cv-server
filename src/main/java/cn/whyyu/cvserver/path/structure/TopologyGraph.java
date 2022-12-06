@@ -23,13 +23,24 @@ public strictfp class TopologyGraph {
         return vertices.get(verticesIndex);
     }
 
-    public static void insertVertex(String dataIndex, S2LatLng s2LatLng) {
+    /**
+     * 往拓扑路网中嵌入节点，且会依据dataIndex防止重复添加
+     * @param dataIndex 节点的唯一id
+     * @param s2LatLng 节点的经纬度
+     */
+    public static Vertex insertVertex(String dataIndex, S2LatLng s2LatLng) {
         if(!dataIndexToVerticesIndex.containsKey(dataIndex)){
             dataIndexToVerticesIndex.put(dataIndex, vertices.size());
             Vertex vertex = new Vertex(dataIndex, s2LatLng.latRadians(), s2LatLng.lngRadians(),
                     Math.cos(s2LatLng.latRadians()));
             vertices.add(vertex);
+            return vertex;
         }
+        return null;
+    }
+
+    public static void insertVertex(String dataIndex, Vertex vertex) {
+
     }
 
     public static void deleteVertex(String dataIndex) {

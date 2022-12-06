@@ -17,6 +17,11 @@ public class Vertex extends S2Point {
         this.dataIndex = dataIndex;
     }
 
+    public Vertex(String dataIndex, S2Point s2Point) {
+        super(s2Point.x, s2Point.y, s2Point.z);
+        this.dataIndex = dataIndex;
+    }
+
     public String getDataIndex() {
         return dataIndex;
     }
