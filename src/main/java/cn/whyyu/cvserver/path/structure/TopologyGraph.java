@@ -39,8 +39,11 @@ public strictfp class TopologyGraph {
         return null;
     }
 
-    public static void insertVertex(String dataIndex, Vertex vertex) {
-
+    public static void insertVertex(Vertex vertex) {
+        if(!dataIndexToVerticesIndex.containsKey(vertex.dataIndex)) {
+            dataIndexToVerticesIndex.put(vertex.dataIndex, vertices.size());
+            vertices.add(vertex);
+        }
     }
 
     public static void deleteVertex(String dataIndex) {

@@ -24,17 +24,22 @@ public class PointIndex {
         s2PointIndex.add(vertex, vertex.dataIndex);
     }
 
-//    /**
-//     * 每次重新创建query可保证S2PointIndex有序，详见源码reset()
-//     * @param target 当前用户的地理位置
-//     * @return 距离用户最近的几个点
-//     */
-//    public List<S2ClosestPointQuery.Result<Boolean>> findClosestPoints(
-//            S2Point target, int maxPoints) {
-//        S2ClosestPointQuery<Boolean> query = new S2ClosestPointQuery<>(s2PointIndex);
-//        query.setMaxPoints(maxPoints);
-//        return query.findClosestPoints(target);
-//    }
+    /**
+     * 每次重新创建query可保证S2PointIndex有序，详见源码reset()
+     * @param target 当前用户的地理位置
+     * @return 距离用户最近的几个点
+     */
+    public List<S2ClosestPointQuery.Result<String>> findClosestPoints(
+            S2Point target, int maxPoints) {
+        S2ClosestPointQuery<String> query = new S2ClosestPointQuery<>(s2PointIndex);
+        query.setMaxPoints(maxPoints);
+        return query.findClosestPoints(target);
+    }
+
+    public S2ClosestPointQuery.Result<String> findClosestPoint(S2Point target) {
+        S2ClosestPointQuery<String> query = new S2ClosestPointQuery<>(s2PointIndex);
+        return query.findClosestPoint(target);
+    }
 
     public int size() {
         return s2PointIndex.numPoints();

@@ -3,8 +3,6 @@ package cn.whyyu.cvserver.util;
 
 import cn.whyyu.cvserver.path.structure.TopologyGraph;
 import cn.whyyu.cvserver.path.structure.Vertex;
-import com.google.common.geometry.S2;
-import com.google.common.geometry.S2Edge;
 import com.google.common.geometry.S2LatLng;
 import com.google.common.geometry.S2Point;
 import org.geotools.data.DataStore;
@@ -66,6 +64,7 @@ public class ShapeReader {
     public static Set<Vertex> readLineString(File file) {
         Map<String, Object> map = new HashMap<>();
         Set<Vertex> vertexSet = new HashSet<>();
+        Map<S2Point, String> dataIndexMap = new HashMap<>();
         try {
             map.put("url", file.toURI().toURL());
             DataStore dataStore = DataStoreFinder.getDataStore(map);
@@ -84,22 +83,26 @@ public class ShapeReader {
                 S2LatLng start = S2LatLng.fromDegrees(coordinates[0].getY(),
                         coordinates[0].getX());
                 S2Point startPoint = start.toPoint();
+                // 嵌入拓扑结构，计算最短路径(注意重复添加判别依据是dataIndex)
                 Vertex startVertex = new Vertex(String.valueOf(vertexSet.size()), startPoint);
                 if (!vertexSet.contains(startVertex)) {
-                   vertexSet.add(startVertex);
-                    TopologyGraph.insertVertex(String.valueOf(id), start);
+                    dataIndexMap.put(startVertex, String.valueOf(vertexSet.size()));
+                    vertexSet.add(startVertex);
+                    TopologyGraph.insertVertex(startVertex);
                 }
                 S2LatLng end = S2LatLng.fromDegrees(coordinates[1].getY(),
                         coordinates[1].getX());
-                // 嵌入拓扑结构，计算最短路径(注意重复添加判别依据是dataIndex)
-
-                TopologyGraph.insertVertex(String.valueOf(id + 1), end);
+                S2Point endPoint = end.toPoint();
+                Vertex endVertex = new Vertex(String.valueOf(vertexSet.size()), endPoint);
+                if(!vertexSet.contains(endVertex)) {
+                    dataIndexMap.put(endVertex, String.valueOf(vertexSet.size()));
+                    vertexSet.add(endVertex);
+                    TopologyGraph.insertVertex(endVertex);
+                }
                 double distance = start.toPoint().getDistance(end.toPoint());
-                TopologyGraph.insertEdge(String.valueOf(id), String.valueOf(id + 1), distance);
-                id += 2;
-//                if (!features.hasNext()) {
-//                    nodeSet.add(end.toPoint());
-//                }
+                String startIndex = dataIndexMap.get(startVertex);
+                String endIndex = dataIndexMap.get(endVertex);
+                TopologyGraph.insertEdge(startIndex, endIndex, distance);
             }
             features.close();
             dataStore.dispose();
@@ -110,9 +113,9 @@ public class ShapeReader {
     }
 
     public static void main(String[] args) {
-//        String path = "C:/Users/YH/Desktop/unicomRailwayStation/pathway/pathway.shp";
-//        Set<S2Point> nodeSet = ShapeReader.readLineString(new File(path));
-//        System.out.println(nodeSet);
+        String path = "C:/Users/YH/Desktop/unicomRailwayStation/pathway/pathway.shp";
+        Set<Vertex> nodeSet = ShapeReader.readLineString(new File(path));
+        System.out.println(nodeSet);
 
         // Set的equals条件只检验坐标是否相等，而不管dataIndex
 //        Set<Vertex> vertexSet = new HashSet<>();
@@ -124,5 +127,6 @@ public class ShapeReader {
 //        vertexSet.add(vertex2);
 //        System.out.println(vertexSet.size());
 //        System.out.println(vertexSet.contains(vertex2));
+
     }
 }

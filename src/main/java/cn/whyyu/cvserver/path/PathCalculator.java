@@ -30,7 +30,7 @@ public class PathCalculator {
     private final int capacity;
 
     public PathCalculator() {
-        this.capacity = 128;
+        this.capacity = 64;
         this.openMap = new HashMap<>(capacity);
         this.closeMap = new HashMap<>(capacity);
         this.minHeap = new BinaryMinHeap<>(Node.class, capacity / 2);
@@ -48,7 +48,7 @@ public class PathCalculator {
             refresh();
         }
         // ----- 初始化
-        List<String> resultList = new ArrayList<>(100);
+        List<String> resultList = new ArrayList<>(30);
         Node currentNode = new Node(query.sourceID, query.source, 0.0);
         String goalID = query.targetID;
         S2Point goal = query.target;
