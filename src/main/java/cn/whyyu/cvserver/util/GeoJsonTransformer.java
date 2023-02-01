@@ -1,5 +1,6 @@
 package cn.whyyu.cvserver.util;
 
+import cn.whyyu.cvserver.entity.Camera;
 import cn.whyyu.cvserver.path.structure.TopologyGraph;
 import cn.whyyu.cvserver.path.structure.Vertex;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +53,7 @@ public class GeoJsonTransformer {
         return rootNode;
     }
 
-    public static ObjectNode points2GeoJson(List<S2ClosestPointQuery.Result<String>> results) {
+    public static ObjectNode points2GeoJson(List<S2ClosestPointQuery.Result<Camera>> results) {
         ObjectMapper mapper = new ObjectMapper();
         // 生成根节点
         ObjectNode rootNode = mapper.createObjectNode();
@@ -61,7 +62,7 @@ public class GeoJsonTransformer {
         // 生成Features数组
         ArrayNode features = mapper.createArrayNode();
         // 每一个点创建一个feature
-        for (S2ClosestPointQuery.Result<String> result : results) {
+        for (S2ClosestPointQuery.Result<Camera> result : results) {
             ObjectNode feature = mapper.createObjectNode();
             feature.put("type", "Feature");
 
@@ -73,8 +74,17 @@ public class GeoJsonTransformer {
             coordinates.add(s2LatLng.lngDegrees());
             coordinates.add(s2LatLng.latDegrees());
             geometry.set("coordinates", coordinates);
-
             feature.set("geometry", geometry);
+
+            // 创建properties对象
+            ObjectNode properties = mapper.createObjectNode();
+            Camera camera = result.entry().data;
+            properties.put("sequence", camera.getSequence());
+            properties.put("videoCode", camera.getVideoCode());
+            properties.put("name", camera.getName());
+            properties.put("level", camera.getLevel());
+            feature.set("properties", properties);
+
             features.add(feature);
         }
         rootNode.set("features", features);

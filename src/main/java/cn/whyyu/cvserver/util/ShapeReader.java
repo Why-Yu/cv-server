@@ -25,36 +25,37 @@ import java.util.*;
  * 读取shapefile文件的工具类，负责将数据转化为算法需要的数据结构
  */
 public class ShapeReader {
-    /**
-     * 读取摄像头点数据
-     * @param file shp文件
-     * @return 摄像头点索引
-     */
-    public static PointIndex readPoint(File file) {
-        Map<String, Object> map = new HashMap<>();
-        PointIndex pointIndex = new PointIndex();
-        try {
-            map.put("url", file.toURI().toURL());
-            DataStore dataStore = DataStoreFinder.getDataStore(map);
-            //字符转码，防止中文乱码
-            ((ShapefileDataStore) dataStore).setCharset(StandardCharsets.UTF_8);
-            String typeName = dataStore.getTypeNames()[0];
-
-            FeatureSource<SimpleFeatureType, SimpleFeature> source = dataStore.getFeatureSource(typeName);
-            FeatureCollection<SimpleFeatureType, SimpleFeature> collection = source.getFeatures();
-            FeatureIterator<SimpleFeature> features = collection.features();
-            while (features.hasNext()) {
-                SimpleFeature feature = features.next();
-                Point point = (Point) feature.getDefaultGeometry();
-                pointIndex.add(point);
-            }
-            features.close();
-            dataStore.dispose();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return pointIndex;
-    }
+//    /**
+//     * 读取摄像头点数据
+//     * @param file shp文件
+//     * @return 摄像头点索引
+//     */
+//    @Deprecated
+//    public static PointIndex readPoint(File file) {
+//        Map<String, Object> map = new HashMap<>();
+//        PointIndex pointIndex = new PointIndex();
+//        try {
+//            map.put("url", file.toURI().toURL());
+//            DataStore dataStore = DataStoreFinder.getDataStore(map);
+//            //字符转码，防止中文乱码
+//            ((ShapefileDataStore) dataStore).setCharset(StandardCharsets.UTF_8);
+//            String typeName = dataStore.getTypeNames()[0];
+//
+//            FeatureSource<SimpleFeatureType, SimpleFeature> source = dataStore.getFeatureSource(typeName);
+//            FeatureCollection<SimpleFeatureType, SimpleFeature> collection = source.getFeatures();
+//            FeatureIterator<SimpleFeature> features = collection.features();
+//            while (features.hasNext()) {
+//                SimpleFeature feature = features.next();
+//                Point point = (Point) feature.getDefaultGeometry();
+//                pointIndex.add(point);
+//            }
+//            features.close();
+//            dataStore.dispose();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return pointIndex;
+//    }
 
     /**
      * 读取拓扑路网数据，并将数据构建为TopologyGraph

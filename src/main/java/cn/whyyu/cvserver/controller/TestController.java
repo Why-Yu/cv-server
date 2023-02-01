@@ -9,6 +9,7 @@ import cn.whyyu.cvserver.video.threadpool.VideoThreadPool;
 import org.apache.commons.net.ftp.FTPClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -54,5 +55,11 @@ public class TestController {
         String pushURL = videoThreadPool.startVideoPush("F:/Image/test.mp4");
         resultList.add(pushURL);
         return CommonResult.success(resultList);
+    }
+
+    @RequestMapping("/cameraTest")
+    public void cameraTest(@RequestParam double startLat, @RequestParam double startLng,
+                           @RequestParam(required = false) Integer maxPoints) {
+        System.out.println(maxPoints);
     }
 }
