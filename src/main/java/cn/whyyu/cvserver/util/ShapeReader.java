@@ -109,12 +109,13 @@ public class ShapeReader {
             dataStore.dispose();
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("缺少拓扑路径数据");
         }
         return vertexSet;
     }
 
     public static void main(String[] args) {
-        String path = "C:/Users/YH/Desktop/unicomRailwayStation/pathway/pathway.shp";
+        String path = "C:/Users/YH/unicomRailwayStation/pathway/pathway.shp";
         Set<Vertex> nodeSet = ShapeReader.readLineString(new File(path));
         System.out.println(nodeSet);
 

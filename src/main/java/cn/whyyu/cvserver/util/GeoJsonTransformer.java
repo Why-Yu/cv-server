@@ -91,4 +91,39 @@ public class GeoJsonTransformer {
         return rootNode;
     }
 
+    public static ObjectNode cameraList2GeoJson(List<Camera> list) {
+        ObjectMapper mapper = new ObjectMapper();
+        // 生成根节点
+        ObjectNode rootNode = mapper.createObjectNode();
+        rootNode.put("type", "FeatureCollection");
+        // 生成Features数组
+        ArrayNode features = mapper.createArrayNode();
+        // 每一个点创建一个feature
+        for (Camera camera : list) {
+            ObjectNode feature = mapper.createObjectNode();
+            feature.put("type", "Feature");
+
+            // 创建Geometry对象
+            ObjectNode geometry = mapper.createObjectNode();
+            geometry.put("type", "Point");
+            ArrayNode coordinates = mapper.createArrayNode();
+            coordinates.add(camera.getLng());
+            coordinates.add(camera.getLat());
+            geometry.set("coordinates", coordinates);
+            feature.set("geometry", geometry);
+
+            // 创建properties对象
+            ObjectNode properties = mapper.createObjectNode();
+            properties.put("sequence", camera.getSequence());
+            properties.put("videoCode", camera.getVideoCode());
+            properties.put("name", camera.getName());
+            properties.put("level", camera.getLevel());
+            feature.set("properties", properties);
+
+            features.add(feature);
+        }
+        rootNode.set("features", features);
+        return rootNode;
+    }
+
 }

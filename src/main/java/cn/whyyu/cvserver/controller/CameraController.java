@@ -38,7 +38,7 @@ public class CameraController {
         // 没有初始化的话，先执行一次初始化
         if(cameraPointIndex == null) {
             cameraPointIndex = new PointIndex<>();
-            File file = new File("C:\\Users\\YH\\Desktop\\unicomRailwayStation\\camera.xlsx");
+            File file = new File("/home/shapeFile/camera.xlsx");
             try {
                 ArrayList<Camera> excelData = ExcelReader.readExcel(file, Camera.class);
                 for (Camera camera : excelData) {
@@ -54,6 +54,9 @@ public class CameraController {
             Set<Vertex> vertexSet = ShapeReader.readLineString(new File(
                     "/home/shapeFile/pathway.shp"));
            nodeIndex = new PointIndex<>();
+           if (vertexSet.isEmpty()) {
+               return CommonResult.failed("缺少地面拓扑数据");
+           }
            for (Vertex vertex : vertexSet) {
                nodeIndex.add(vertex, vertex.dataIndex);
            }
@@ -90,6 +93,25 @@ public class CameraController {
         }
         objectNodeResult.set("cameraPath", pathArray);
         return CommonResult.success(objectNodeResult);
+    }
+
+    @RequestMapping("/getAllCamera")
+    public CommonResult<ObjectNode> getAllCamera(@RequestParam int level) {
+        File file = new File("/home/shapeFile/camera.xlsx");
+        ArrayList<Camera> excelData = new ArrayList<>();
+        try {
+            excelData = ExcelReader.readExcel(file, Camera.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ArrayList<Camera> filterCameraList = new ArrayList<>();
+        for (Camera camera : excelData) {
+            if (camera.getLevel() == level) {
+                filterCameraList.add(camera);
+            }
+        }
+        return CommonResult.success(GeoJsonTransformer.cameraList2GeoJson(filterCameraList));
     }
 
 
