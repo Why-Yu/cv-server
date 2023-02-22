@@ -172,6 +172,12 @@ public strictfp class TopologyGraph {
         return vertices.size();
     }
 
+    // 重置此结构
+    public static void reset() {
+        vertices = new ArrayList<>(4096);
+        dataIndexToVerticesIndex = new HashMap<>(4096);
+    }
+
     public static List<Vertex> getVertices() {
         return vertices;
     }

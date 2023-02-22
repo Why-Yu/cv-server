@@ -17,6 +17,7 @@
         <java.version>11</java.version>
         <geotools.version>29-SNAPSHOT</geotools.version>
         <guava.version>29.0-jre</guava.version>
+        <proj4j.version>1.2.3</proj4j.version>
     </properties>
     <dependencies>
         <dependency>
@@ -74,6 +75,16 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.proj4j</groupId>
+            <artifactId>proj4j</artifactId>
+            <version>${proj4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.proj4j</groupId>
+            <artifactId>proj4j-epsg</artifactId>
+            <version>${proj4j.version}</version>
         </dependency>
     </dependencies>
 

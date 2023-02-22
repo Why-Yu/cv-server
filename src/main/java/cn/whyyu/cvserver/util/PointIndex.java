@@ -2,10 +2,7 @@ package cn.whyyu.cvserver.util;
 
 import cn.whyyu.cvserver.entity.Camera;
 import cn.whyyu.cvserver.path.structure.Vertex;
-import com.google.common.geometry.S2ClosestPointQuery;
-import com.google.common.geometry.S2LatLng;
-import com.google.common.geometry.S2Point;
-import com.google.common.geometry.S2PointIndex;
+import com.google.common.geometry.*;
 import org.locationtech.jts.geom.Point;
 
 import java.util.List;
@@ -21,7 +18,9 @@ public class PointIndex<E> {
     }
 
     public void add(Vertex vertex, E data) {
-        s2PointIndex.add(vertex, data);
+        if (S2.isUnitLength(vertex)) {
+            s2PointIndex.add(vertex, data);
+        }
     }
 
     /**

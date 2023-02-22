@@ -52,6 +52,9 @@ public class PathCalculator {
         Node currentNode = new Node(query.sourceID, query.source, 0.0);
         String goalID = query.targetID;
         S2Point goal = query.target;
+        // 初始化过程中就遗漏了一步，没有把起始点加入到closeMap中
+        closeMap.put(currentNode.dataIndex, 0.0);
+
         // -----
 
 //        double total = 0;

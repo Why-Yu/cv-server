@@ -3,6 +3,7 @@ package cn.whyyu.cvserver.util;
 
 import cn.whyyu.cvserver.path.structure.TopologyGraph;
 import cn.whyyu.cvserver.path.structure.Vertex;
+import com.google.common.geometry.S2ClosestPointQuery;
 import com.google.common.geometry.S2LatLng;
 import com.google.common.geometry.S2Point;
 import org.geotools.data.DataStore;
@@ -14,6 +15,7 @@ import org.geotools.feature.FeatureIterator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.proj4j.ProjCoordinate;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -63,8 +65,11 @@ public class ShapeReader {
      * @return 拓扑节点转化为S2Point的Set
      */
     public static Set<Vertex> readLineString(File file) {
+        // 存储文件列表
         Map<String, Object> map = new HashMap<>();
+        // 拓扑路网中的点集合(可用于避免添加重复点，也便于后续生成点索引查询最近点)
         Set<Vertex> vertexSet = new HashSet<>();
+        // 点到dataIndex的映射，主要是在插入边时，若遇到重复点能快速找到对应的dataIndex(仅根据x,y作为key)
         Map<S2Point, String> dataIndexMap = new HashMap<>();
         try {
             map.put("url", file.toURI().toURL());
@@ -81,26 +86,44 @@ public class ShapeReader {
                 SimpleFeature feature = features.next();
                 MultiLineString lineString = (MultiLineString) feature.getDefaultGeometry();
                 Coordinate[] coordinates = lineString.getCoordinates();
-                S2LatLng start = S2LatLng.fromDegrees(coordinates[0].getY(),
-                        coordinates[0].getX());
+                // 数据中可能会出现部分值为NaN，必须略过这部分错值
+                if (Double.isNaN(coordinates[0].getY()) || Double.isNaN(coordinates[0].getX())
+                || Double.isNaN(coordinates[1].getY()) || Double.isNaN(coordinates[1].getX())) {
+                    continue;
+                }
+
+                ProjCoordinate wgs84CoordinateStart = CoordinateTransformer.geoToWgs(
+                        coordinates[0].getX(), coordinates[0].getY());
+                S2LatLng start = S2LatLng.fromDegrees(wgs84CoordinateStart.y,
+                        wgs84CoordinateStart.x);
                 S2Point startPoint = start.toPoint();
-                // 嵌入拓扑结构，计算最短路径(注意重复添加判别依据是dataIndex)
-                Vertex startVertex = new Vertex(String.valueOf(vertexSet.size()), startPoint);
+                // Set的equals条件只检验坐标是否相等，而不管dataIndex，所以先赋值一个默认dataIndex,dataIndexMap同理
+                Vertex startVertex = new Vertex("0", startPoint);
                 if (!vertexSet.contains(startVertex)) {
-                    dataIndexMap.put(startVertex, String.valueOf(vertexSet.size()));
+                    String dataIndex = String.valueOf(id);
+                    startVertex.dataIndex = dataIndex;
+                    dataIndexMap.put(startVertex, dataIndex);
                     vertexSet.add(startVertex);
                     TopologyGraph.insertVertex(startVertex);
+                    id++;
                 }
-                S2LatLng end = S2LatLng.fromDegrees(coordinates[1].getY(),
-                        coordinates[1].getX());
+
+                ProjCoordinate wgs84CoordinateEnd = CoordinateTransformer.geoToWgs(
+                        coordinates[1].getX(), coordinates[1].getY());
+                S2LatLng end = S2LatLng.fromDegrees(wgs84CoordinateEnd.y,
+                        wgs84CoordinateEnd.x);
                 S2Point endPoint = end.toPoint();
-                Vertex endVertex = new Vertex(String.valueOf(vertexSet.size()), endPoint);
+                Vertex endVertex = new Vertex("0", endPoint);
                 if(!vertexSet.contains(endVertex)) {
-                    dataIndexMap.put(endVertex, String.valueOf(vertexSet.size()));
+                    String dataIndex = String.valueOf(id);
+                    endVertex.dataIndex = dataIndex;
+                    dataIndexMap.put(endVertex, dataIndex);
                     vertexSet.add(endVertex);
                     TopologyGraph.insertVertex(endVertex);
+                    id++;
                 }
-                double distance = start.toPoint().getDistance(end.toPoint());
+
+                double distance = startPoint.getDistance(endPoint);
                 String startIndex = dataIndexMap.get(startVertex);
                 String endIndex = dataIndexMap.get(endVertex);
                 TopologyGraph.insertEdge(startIndex, endIndex, distance);
@@ -115,11 +138,16 @@ public class ShapeReader {
     }
 
     public static void main(String[] args) {
-        String path = "C:/Users/YH/unicomRailwayStation/pathway/pathway.shp";
+        String path = "C:\\Users\\YH\\Desktop\\unicomRailwayStation\\newShapeFile\\shapeFile\\square\\road.shp";
         Set<Vertex> nodeSet = ShapeReader.readLineString(new File(path));
-        System.out.println(nodeSet);
+        PointIndex<String> nodeIndex = new PointIndex<>();
+        for (Vertex vertex : nodeSet) {
+            nodeIndex.add(vertex, vertex.dataIndex);
+        }
+        S2ClosestPointQuery.Result<String> closestStartNode = nodeIndex.findClosestPoint(S2LatLng.fromDegrees(30.618258, 114.249633).toPoint());
+        System.out.println(nodeSet.size());
 
-        // Set的equals条件只检验坐标是否相等，而不管dataIndex
+        // Set和Map的equals条件只检验坐标是否相等，而不管dataIndex
 //        Set<Vertex> vertexSet = new HashSet<>();
 //        S2Point start = S2LatLng.fromDegrees(120.0, 30.0).toPoint();
 //        S2Point end = S2LatLng.fromDegrees(120.0, 30.0).toPoint();
@@ -129,6 +157,12 @@ public class ShapeReader {
 //        vertexSet.add(vertex2);
 //        System.out.println(vertexSet.size());
 //        System.out.println(vertexSet.contains(vertex2));
-
+//
+//        Map<S2Point, String> dataIndexMap = new HashMap<>();
+//        dataIndexMap.put(vertex1, "1");
+//        dataIndexMap.put(vertex2, "2");
+//        System.out.println(dataIndexMap.size());
+//        System.out.println(dataIndexMap.get(vertex1));
+//        System.out.println(dataIndexMap.get(vertex2));
     }
 }
