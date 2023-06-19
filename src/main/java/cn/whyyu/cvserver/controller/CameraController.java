@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.geometry.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/camera")
 public class CameraController {
     private PointIndex<Camera> cameraGroundIndex;
@@ -49,7 +51,7 @@ public class CameraController {
             cameraUnderIndex = new PointIndex<>();
             // "/home/shapeFile/camera.xlsx"
             // C:/Users/YH/Desktop/unicomRailwayStation/shapeFile/camera.xlsx
-            File file = new File("C:/Users/YH/Desktop/unicomRailwayStation/shapeFile/camera.xlsx");
+            File file = new File("/home/shapeFile/camera.xlsx");
             try {
                 // 载入地上下摄像头数据
                 ArrayList<Camera> excelData = ExcelReader.readExcel(file, Camera.class);
@@ -135,7 +137,7 @@ public class CameraController {
     public CommonResult<ObjectNode> getAllCamera(@RequestParam int level) {
         // "/home/shapeFile/camera.xlsx"
         // C:/Users/YH/Desktop/unicomRailwayStation/shapeFile/camera.xlsx
-        File file = new File("C:/Users/YH/Desktop/unicomRailwayStation/shapeFile/camera.xlsx");
+        File file = new File("/home/shapeFile/camera.xlsx");
         ArrayList<Camera> excelData = new ArrayList<>();
         try {
             excelData = ExcelReader.readExcel(file, Camera.class);
@@ -200,13 +202,13 @@ public class CameraController {
             // "/home/shapeFile/square/road.shp"
             // C:/Users/YH/Desktop/unicomRailwayStation/shapeFile/square/road.shp
             vertexSet = ShapeReader.readLineString(new File(
-                    "C:/Users/YH/Desktop/unicomRailwayStation/newShapeFile/shapeFile/square/road.shp"));
+                    "/home/shapeFile/square/road.shp"));
         } else if (level == -1){
             TopologyGraph.reset();
             // "/home/shapeFile/parkingLot/road.shp"
             // C:/Users/YH/Desktop/unicomRailwayStation/shapeFile/parkingLot/road.shp
             vertexSet = ShapeReader.readLineString(new File(
-                    "C:/Users/YH/Desktop/unicomRailwayStation/newShapeFile/shapeFile/parkingLot/road.shp"));
+                    "/home/shapeFile/parkingLot/road.shp"));
         }
         if (vertexSet.isEmpty()) {
             return -1;
